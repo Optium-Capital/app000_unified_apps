@@ -1,4 +1,4 @@
-# 💼 Optium Capital – Unified Financial App Platform
+# 💼 Optium Capital – Unified Data App Platform
 
 This platform combines multiple data apps into one unified, browser-based interface.  
 ---
