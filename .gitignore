@@ -1,0 +1,28 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environment
+venv/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Environment variables
+.env
+
+# Ignore all contents of /data but keep the folder
+data/*
+!data/.gitkeep
+
+# Ignore all raw data file types globally
+*.csv
+*.xlsx
+*.parquet
+
+testcases.txt
+setup.sh
