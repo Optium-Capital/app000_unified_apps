@@ -69,7 +69,6 @@ dir
 Paste these lines **one by one** into Command Prompt:
 
 py -m venv venv  
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass  
 venv\Scripts\activate.bat  
 pip install -r requirements.txt  
 streamlit run app.py
@@ -110,4 +109,4 @@ streamlit run app.py
 ---
 
 Made to save hours of repetitive work  
-💼 Built by the Data Team @ Optium Capital
+💼 Built by Olivier de Swart for Optium Capital
