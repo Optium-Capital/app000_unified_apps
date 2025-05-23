@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import io
 
-
 def run():
     # ✅ Load the data and cache it
     @st.cache_data
@@ -12,7 +11,7 @@ def run():
     # ✅ Report generator function (wildcard-compatible)
     def generate_report(df, entity_patterns):
         pattern = '|'.join(p.strip('%') for p in entity_patterns)
-        df_filtered = df[df['entity_id'].astype(str).str.contains(pattern)]
+        df_filtered = df[df['entity_id'].astype(str).str.contains(pattern, na=False)]
 
         summary = df_filtered.groupby('entity_id')[
             ['visa fees', 'mastercard fees', 'visa sales', 'mastercard sales']
@@ -33,26 +32,28 @@ def run():
     # ✅ Title
     st.title("Franchisee Financial Report 2005–2019")
 
-    # ✅ Session state setup
+    # ✅ Setup session state
+    if 'entity_input' not in st.session_state:
+        st.session_state.entity_input = ""
     if 'report' not in st.session_state:
         st.session_state.report = None
-    if 'last_input' not in st.session_state:
-        st.session_state.last_input = ""
     if 'monthly_report' not in st.session_state:
         st.session_state.monthly_report = None
 
     # 🔍 Search form
-    with st.form("search_form", clear_on_submit=False):
-        entity_input = st.text_input("Enter ENTITY_IDs separated by commas (wildcards like %12345% allowed):", value=st.session_state.last_input)
-        submitted = st.form_submit_button("Search")
-
-    # 🧮 Process input and generate report
-    if submitted:
-        patterns = [e.strip() for e in entity_input.split(",") if e.strip()]
+    def handle_search():
+        input_text = st.session_state.entity_input
+        patterns = [e.strip() for e in input_text.split(",") if e.strip()]
         report, filtered = generate_report(df, patterns)
         st.session_state.report = report
-        st.session_state.last_input = entity_input
         st.session_state.monthly_report = filtered
+
+    with st.form("search_form", clear_on_submit=False):
+        st.text_input(
+            "Enter ENTITY_IDs separated by commas (wildcards like %12345% allowed):",
+            key="entity_input"
+        )
+        submitted = st.form_submit_button("Search", on_click=handle_search)
 
     # 📊 Show summary report
     if st.session_state.report is not None:
@@ -72,8 +73,8 @@ def run():
         # 📆 Monthly breakdown
         if 'month' in df.columns:
             show_monthly = st.checkbox("📊 Show month-by-month breakdown", key="show_months")
-            if show_monthly:
-                monthly = st.session_state.monthly_report.groupby(['entity_id', 'month'])[                    
+            if show_monthly and st.session_state.monthly_report is not None:
+                monthly = st.session_state.monthly_report.groupby(['entity_id', 'month'])[
                     ['visa fees', 'mastercard fees', 'visa sales', 'mastercard sales']
                 ].sum().reset_index()
 
